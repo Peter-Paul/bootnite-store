@@ -66,6 +66,7 @@ export default function Home() {
   const [transferFee, setTransferFee] = useState('');
   const [ownedItems, setOwnedItems] = useState<number[]>([]);
   const [itemsOwned, setItemsOwned] = useState<{ [key: number]: boolean }>({});
+  const [transferAddresses, setTransferAddresses] = useState<{ [key: number]: string }>({});
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -73,6 +74,28 @@ export default function Home() {
     }, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (window.ethereum) {
+      const handleAccountsChanged = async (accounts: string[]) => {
+        if (accounts.length === 0) {
+          disconnectWallet();
+        } else if (accounts[0] !== account) {
+          setAccount(accounts[0]);
+          await checkOwner(accounts[0]);
+          await loadOwnedItems(accounts[0]);
+          await checkItemsOwnership();
+          toast.success('Wallet switched!');
+        }
+      };
+
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+
+      return () => {
+        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+      };
+    }
+  }, [account]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -184,6 +207,15 @@ export default function Home() {
       const errorMsg = err?.reason || err?.message || 'Failed to connect wallet';
       toast.error(errorMsg);
     }
+  };
+
+  const disconnectWallet = () => {
+    setAccount('');
+    setIsOwner(false);
+    setOwnedItems([]);
+    setItemsOwned({});
+    setTransferAddresses({});
+    toast.success('Wallet disconnected!');
   };
 
   const handlePurchase = async (itemId: number, price: string) => {
@@ -312,6 +344,34 @@ export default function Home() {
     }
   };
 
+  const handleTransferItem = async (itemId: number, toAddress: string) => {
+    try {
+      if (!account) {
+        toast.error('Connect wallet first');
+        return;
+      }
+      if (!toAddress || !ethers.isAddress(toAddress)) {
+        toast.error('Enter valid address');
+        return;
+      }
+
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+
+      const fee = await contract.transferFee();
+      const tx = await contract.transferItem(toAddress, itemId, { value: fee });
+      await tx.wait();
+      await loadOwnedItems(account);
+      await checkItemsOwnership();
+      setTransferAddresses({ ...transferAddresses, [itemId]: '' });
+      toast.success('Item transferred!');
+    } catch (err: any) {
+      const errorMsg = err?.reason || err?.message || 'Transfer failed';
+      toast.error(errorMsg);
+    }
+  };
+
   return (
     <main className="min-h-screen p-8 relative">
       <div className="fixed inset-0 -z-10">
@@ -332,8 +392,16 @@ export default function Home() {
       </div>
       <div className="absolute top-8 right-8">
         {account ? (
-          <div className="bg-card border-2 border-accent px-4 py-2 rounded">
-            <span className="text-accent text-sm">{account.slice(0, 6)}...{account.slice(-4)}</span>
+          <div className="flex items-center gap-3">
+            <div className="bg-card border-2 border-accent px-4 py-2 rounded">
+              <span className="text-accent text-sm">{account.slice(0, 6)}...{account.slice(-4)}</span>
+            </div>
+            <button
+              onClick={disconnectWallet}
+              className="bg-card border-2 border-primary/30 hover:border-accent text-foreground px-4 py-2 rounded text-sm font-medium transition-colors"
+            >
+              Disconnect
+            </button>
           </div>
         ) : (
           <button
@@ -542,6 +610,23 @@ export default function Home() {
                         <span className="text-foreground/70">Duration:</span>
                         <span className="text-accent font-medium">{token.duration}</span>
                       </div>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      value={transferAddresses[itemId] || ''}
+                      onChange={(e) => setTransferAddresses({ ...transferAddresses, [itemId]: e.target.value })}
+                      placeholder="Recipient address"
+                      className="w-full bg-background border-2 border-primary/30 text-foreground px-3 py-2 rounded text-sm focus:border-accent outline-none"
+                    />
+                    {transferAddresses[itemId] && (
+                      <button
+                        onClick={() => handleTransferItem(itemId, transferAddresses[itemId])}
+                        className="w-full bg-accent hover:bg-accent/80 text-foreground py-2 px-3 rounded text-sm font-medium transition-colors"
+                      >
+                        Transfer
+                      </button>
                     )}
                   </div>
                 </div>
