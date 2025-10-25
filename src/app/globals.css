@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+:root {
+  --background: 30 15% 8%;
+  --foreground: 40 30% 85%;
+  --primary: 35 60% 55%;
+  --secondary: 25 50% 45%;
+  --accent: 40 65% 60%;
+  --card: 30 20% 12%;
+  --neon-glow: 0 0 20px hsl(35 60% 55% / 0.6);
+  --gradient-hero: linear-gradient(135deg, hsl(35 60% 55%), hsl(25 50% 45%));
+}
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-primary: hsl(var(--primary));
+  --color-secondary: hsl(var(--secondary));
+  --color-accent: hsl(var(--accent));
+  --color-card: hsl(var(--card));
+  --font-sans: 'Orbitron', sans-serif;
+}
+
+body {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: 'Orbitron', sans-serif;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      hsl(var(--primary) / 0.03) 0px,
+      transparent 1px,
+      transparent 2px,
+      hsl(var(--primary) / 0.03) 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      hsl(var(--primary) / 0.03) 0px,
+      transparent 1px,
+      transparent 2px,
+      hsl(var(--primary) / 0.03) 3px
+    ),
+    radial-gradient(
+      circle at 20% 30%,
+      hsl(var(--primary) / 0.08) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 70%,
+      hsl(var(--secondary) / 0.06) 0%,
+      transparent 50%
+    );
+  background-size: 40px 40px, 40px 40px, 100% 100%, 100% 100%;
+  background-attachment: fixed;
+}
+
+@keyframes neon-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px hsl(var(--accent)), 0 0 10px hsl(var(--accent)), 0 0 20px hsl(var(--accent)), 0 0 40px hsl(var(--accent));
+  }
+  50% {
+    box-shadow: 0 0 10px hsl(var(--accent)), 0 0 20px hsl(var(--accent)), 0 0 30px hsl(var(--accent)), 0 0 60px hsl(var(--accent));
+  }
+}
+
+.neon-border {
+  animation: neon-glow 2s ease-in-out infinite;
+}
