@@ -316,6 +316,13 @@ const xpTokens = [
     expiry: "4d",
     price: "0.0024 ETH",
   },
+  {
+    id: 16,
+    name: "Wednesday Addams",
+    type: "Sticker",
+    expiry: "5d",
+    price: "0.0029 ETH",
+  },
 ];
 
 const featuredItems = [
@@ -926,6 +933,12 @@ export default function Home() {
                       alt={token.name}
                       className="w-full h-full object-contain"
                     />
+                  ) : token.id === 16 ? (
+                    <img
+                      src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761438767/Gemini_Generated_Image_4d87as4d87as4d87-removebg-preview_ulkxnv.png"
+                      alt={token.name}
+                      className="w-full h-full object-contain"
+                    />
                   ) : (
                     <span className="text-6xl opacity-50">⚡</span>
                   )}
@@ -1063,6 +1076,12 @@ export default function Home() {
                     ) : token.id === 15 ? (
                       <img
                         src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761439644/Gemini_Generated_Image_ev07iwev07iwev07-removebg-preview_qxn0gu.png"
+                        alt={token.name}
+                        className="w-full h-full object-contain"
+                      />
+                    ) : token.id === 16 ? (
+                      <img
+                        src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761438767/Gemini_Generated_Image_4d87as4d87as4d87-removebg-preview_ulkxnv.png"
                         alt={token.name}
                         className="w-full h-full object-contain"
                       />
