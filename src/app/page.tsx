@@ -327,6 +327,14 @@ const xpTokens = [
 
 const featuredItems = [
   {
+    id: 0,
+    name: "Exclusive Store Showcase",
+    type: "Discover premium skins, charms & XP boosts",
+    video:
+      "https://res.cloudinary.com/dwf6iuvbh/video/upload/v1761481969/generated_video_zsdtnj.mp4",
+    duration: 6000,
+  },
+  {
     id: 1,
     name: "Gas Musk Skull",
     type: "Charm",
@@ -375,6 +383,7 @@ export default function Home() {
   }>({});
   const [storeScrollPosition, setStoreScrollPosition] = useState(0);
   const [collectionScrollPosition, setCollectionScrollPosition] = useState(0);
+  const [hasPlayedAudio, setHasPlayedAudio] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -437,11 +446,13 @@ export default function Home() {
   }, [account]);
 
   useEffect(() => {
+    const currentItem = featuredItems[currentSlide];
+    const duration = currentItem.duration || 4000;
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % 3);
-    }, 4000);
+      setCurrentSlide((prev) => (prev + 1) % featuredItems.length);
+    }, duration);
     return () => clearInterval(interval);
-  }, []);
+  }, [currentSlide]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -844,11 +855,35 @@ export default function Home() {
                 className="min-w-full p-8 flex flex-col md:flex-row items-center gap-8"
               >
                 <div className="w-full md:w-1/2 flex items-center justify-center">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="max-w-full max-h-80 object-contain"
-                  />
+                  {"video" in item ? (
+                    <video
+                      key={currentSlide}
+                      src={item.video}
+                      autoPlay
+                      muted={hasPlayedAudio}
+                      loop
+                      playsInline
+                      onLoadedData={(e) => {
+                        const video = e.currentTarget;
+                        video.play().catch(() => {});
+                        if (!hasPlayedAudio) {
+                          video.muted = false;
+                          setHasPlayedAudio(true);
+                        }
+                      }}
+                      className="max-w-full max-h-80 object-contain rounded-lg"
+                      style={{
+                        boxShadow:
+                          "0 0 30px rgba(236, 72, 153, 0.6), 0 0 60px rgba(236, 72, 153, 0.4), 0 0 90px rgba(236, 72, 153, 0.2)",
+                      }}
+                    />
+                  ) : (
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="max-w-full max-h-80 object-contain"
+                    />
+                  )}
                 </div>
                 <div className="w-full md:w-1/2 flex flex-col justify-center text-center md:text-left">
                   <h3 className="text-4xl font-bold text-primary mb-4">
@@ -860,7 +895,7 @@ export default function Home() {
             ))}
           </div>
           <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
-            {[0, 1, 2].map((index) => (
+            {featuredItems.map((_, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentSlide(index)}
