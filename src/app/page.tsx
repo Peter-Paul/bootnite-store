@@ -844,7 +844,7 @@ export default function Home() {
         <h2 className="text-3xl font-bold text-center mb-6 text-primary">
           Featured Items
         </h2>
-        <div className="relative overflow-hidden rounded-lg bg-card border-2 border-accent neon-border">
+        <div className="relative overflow-hidden rounded-lg bg-card/80 border-2 border-accent neon-border">
           <div
             className="flex transition-transform duration-500 ease-in-out"
             style={{ transform: `translateX(-${currentSlide * 100}%)` }}
