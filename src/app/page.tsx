@@ -373,6 +373,8 @@ export default function Home() {
   const [transferAddresses, setTransferAddresses] = useState<{
     [key: number]: string;
   }>({});
+  const [storeScrollPosition, setStoreScrollPosition] = useState(0);
+  const [collectionScrollPosition, setCollectionScrollPosition] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -380,6 +382,34 @@ export default function Home() {
     }, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleStoreWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    const itemWidth = 280 + 24;
+    const maxScroll = Math.max(
+      0,
+      xpTokens.length * itemWidth - (window.innerWidth - 112)
+    );
+    const newPosition = Math.max(
+      0,
+      Math.min(maxScroll, storeScrollPosition + e.deltaY)
+    );
+    setStoreScrollPosition(newPosition);
+  };
+
+  const handleCollectionWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    const itemWidth = 280 + 24;
+    const maxScroll = Math.max(
+      0,
+      ownedItems.length * itemWidth - (window.innerWidth - 112)
+    );
+    const newPosition = Math.max(
+      0,
+      Math.min(maxScroll, collectionScrollPosition + e.deltaY)
+    );
+    setCollectionScrollPosition(newPosition);
+  };
 
   useEffect(() => {
     if (window.ethereum) {
@@ -722,6 +752,34 @@ export default function Home() {
     }
   };
 
+  const scrollStore = (direction: "left" | "right") => {
+    const scrollAmount = 320;
+    const itemWidth = 280 + 24; // card width + gap
+    const maxScroll = Math.max(
+      0,
+      xpTokens.length * itemWidth - (window.innerWidth - 112)
+    );
+    const newPosition =
+      direction === "left"
+        ? Math.max(0, storeScrollPosition - scrollAmount)
+        : Math.min(maxScroll, storeScrollPosition + scrollAmount);
+    setStoreScrollPosition(newPosition);
+  };
+
+  const scrollCollection = (direction: "left" | "right") => {
+    const scrollAmount = 320;
+    const itemWidth = 280 + 24; // card width + gap
+    const maxScroll = Math.max(
+      0,
+      ownedItems.length * itemWidth - (window.innerWidth - 112)
+    );
+    const newPosition =
+      direction === "left"
+        ? Math.max(0, collectionScrollPosition - scrollAmount)
+        : Math.min(maxScroll, collectionScrollPosition + scrollAmount);
+    setCollectionScrollPosition(newPosition);
+  };
+
   return (
     <main className="min-h-screen p-8 relative">
       <div className="fixed inset-0 -z-10">
@@ -740,7 +798,7 @@ export default function Home() {
         ))}
         <div className="absolute inset-0 bg-background/80" />
       </div>
-      <div className="absolute top-8 right-8">
+      <div className="absolute top-8 right-8 hidden md:block">
         {account ? (
           <div className="flex items-center gap-3">
             <div className="bg-card border-2 border-accent px-4 py-2 rounded">
@@ -783,16 +841,16 @@ export default function Home() {
             {featuredItems.map((item) => (
               <div
                 key={item.id}
-                className="min-w-full p-8 flex items-center gap-8"
+                className="min-w-full p-8 flex flex-col md:flex-row items-center gap-8"
               >
-                <div className="w-1/2 flex items-center justify-center">
+                <div className="w-full md:w-1/2 flex items-center justify-center">
                   <img
                     src={item.image}
                     alt={item.name}
                     className="max-w-full max-h-80 object-contain"
                   />
                 </div>
-                <div className="w-1/2 flex flex-col justify-center">
+                <div className="w-full md:w-1/2 flex flex-col justify-center text-center md:text-left">
                   <h3 className="text-4xl font-bold text-primary mb-4">
                     {item.name}
                   </h3>
@@ -851,294 +909,373 @@ export default function Home() {
       </div>
 
       {activeTab === "store" && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 max-w-[1800px] mx-auto">
-          {xpTokens.map((token) => {
-            const isPurchased = itemsOwned[token.id] || false;
-            const priceValue = token.price.replace(" ETH", "");
-            return (
-              <div
-                key={token.id}
-                className="bg-card border-2 border-primary/30 rounded-lg p-6 hover:border-accent hover:shadow-[0_0_20px_rgba(236,72,153,0.5)] hover:scale-105 transition-all duration-300"
-              >
-                <div className="aspect-square bg-gradient-to-br from-primary/20 to-secondary/20 rounded mb-4 flex items-center justify-center">
-                  {token.id === 1 ? (
-                    <img
-                      src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761404454/Gemini_Generated_Image_xi7tnwxi7tnwxi7t-removebg-preview_zw8k5i.png"
-                      alt={token.name}
-                      className="w-full h-full object-contain"
-                    />
-                  ) : token.id === 2 ? (
-                    <img
-                      src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761406429/Gemini_Generated_Image_roqu2wroqu2wroqu-removebg-preview_ktxto3.png"
-                      alt={token.name}
-                      className="w-full h-full object-contain"
-                    />
-                  ) : token.id === 4 ? (
-                    <img
-                      src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761404454/Gemini_Generated_Image_2kua9p2kua9p2kua-removebg-preview_f8eitp.png"
-                      alt={token.name}
-                      className="w-full h-full object-contain"
-                    />
-                  ) : token.id === 5 ? (
-                    <img
-                      src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761406429/Gemini_Generated_Image_y2hd6oy2hd6oy2hd-removebg-preview_gyzykd.png"
-                      alt={token.name}
-                      className="w-full h-full object-contain"
-                    />
-                  ) : token.id === 6 ? (
-                    <img
-                      src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761404454/Gemini_Generated_Image_6lxequ6lxequ6lxe-removebg-preview_cfolj1.png"
-                      alt={token.name}
-                      className="w-full h-full object-contain"
-                    />
-                  ) : token.id === 8 ? (
-                    <img
-                      src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761406122/Gemini_Generated_Image_na7idena7idena7i-removebg-preview_otf18b.png"
-                      alt={token.name}
-                      className="w-full h-full object-contain"
-                    />
-                  ) : token.id === 10 ? (
-                    <img
-                      src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761336936/Gemini_Generated_Image_rl483hrl483hrl48-removebg-preview_dcxsis.png"
-                      alt={token.name}
-                      className="w-full h-full object-contain"
-                    />
-                  ) : token.id === 11 ? (
-                    <img
-                      src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761438767/Gemini_Generated_Image_2rjwp62rjwp62rjw-removebg-preview_vn2rvb.png"
-                      alt={token.name}
-                      className="w-full h-full object-contain"
-                    />
-                  ) : token.id === 12 ? (
-                    <img
-                      src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761438768/Gemini_Generated_Image_8pr2v28pr2v28pr2-removebg-preview_fwnwmr.png"
-                      alt={token.name}
-                      className="w-full h-full object-contain"
-                    />
-                  ) : token.id === 13 ? (
-                    <img
-                      src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761438767/Gemini_Generated_Image_mv1zvwmv1zvwmv1z-removebg-preview_bvnmnn.png"
-                      alt={token.name}
-                      className="w-full h-full object-contain"
-                    />
-                  ) : token.id === 14 ? (
-                    <img
-                      src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761438766/Gemini_Generated_Image_oxxno3oxxno3oxxn-removebg-preview_szxo4h.png"
-                      alt={token.name}
-                      className="w-full h-full object-contain"
-                    />
-                  ) : token.id === 15 ? (
-                    <img
-                      src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761439644/Gemini_Generated_Image_ev07iwev07iwev07-removebg-preview_qxn0gu.png"
-                      alt={token.name}
-                      className="w-full h-full object-contain"
-                    />
-                  ) : token.id === 16 ? (
-                    <img
-                      src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761438767/Gemini_Generated_Image_4d87as4d87as4d87-removebg-preview_ulkxnv.png"
-                      alt={token.name}
-                      className="w-full h-full object-contain"
-                    />
-                  ) : (
-                    <span className="text-6xl opacity-50">⚡</span>
-                  )}
-                </div>
-                <h3 className="text-lg font-semibold text-primary mb-2">
-                  {token.name}
-                </h3>
-                <div className="space-y-2 mb-4">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-foreground/70">Type:</span>
-                    <span className="text-secondary font-medium">
-                      {token.type}
-                    </span>
-                  </div>
-                  {"duration" in token && (
-                    <div className="flex justify-between text-sm">
-                      <span className="text-foreground/70">Duration:</span>
-                      <span className="text-accent font-medium">
-                        {token.duration}
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex justify-between text-sm">
-                    <span className="text-foreground/70">Expires in:</span>
-                    <span className="text-accent font-medium">
-                      {token.expiry}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-foreground/70">Price:</span>
-                    <span className="text-accent font-bold">{token.price}</span>
-                  </div>
-                </div>
-                {isPurchased ? (
-                  <div className="w-full bg-primary/30 text-primary py-2 px-3 rounded text-sm font-medium text-center">
-                    Purchased
-                  </div>
-                ) : account ? (
-                  <button
-                    onClick={() => handlePurchase(token.id, priceValue)}
-                    className="w-full bg-accent hover:bg-accent/80 text-foreground py-2 px-3 rounded text-sm font-medium transition-colors"
+        <div className="relative max-w-[1800px] mx-auto">
+          <button
+            onClick={() => scrollStore("left")}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-accent hover:bg-accent/80 text-foreground w-12 h-12 rounded-full flex items-center justify-center transition-colors shadow-lg"
+            style={{ opacity: storeScrollPosition > 0 ? 1 : 0.3 }}
+          >
+            ←
+          </button>
+          <div
+            className="overflow-x-hidden overflow-y-visible px-14 py-4"
+            onWheel={handleStoreWheel}
+          >
+            <div
+              className="flex gap-6 transition-transform duration-300"
+              style={{ transform: `translateX(-${storeScrollPosition}px)` }}
+            >
+              {xpTokens.map((token) => {
+                const isPurchased = itemsOwned[token.id] || false;
+                const priceValue = token.price.replace(" ETH", "");
+                return (
+                  <div
+                    key={token.id}
+                    className="bg-card border-2 border-primary/30 rounded-lg p-6 hover:border-accent hover:shadow-[0_0_20px_rgba(236,72,153,0.5)] hover:scale-105 transition-all duration-300 flex-shrink-0"
+                    style={{ width: "280px" }}
                   >
-                    Purchase
-                  </button>
-                ) : null}
-              </div>
-            );
-          })}
+                    <div className="aspect-square bg-gradient-to-br from-primary/20 to-secondary/20 rounded mb-4 flex items-center justify-center">
+                      {token.id === 1 ? (
+                        <img
+                          src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761404454/Gemini_Generated_Image_xi7tnwxi7tnwxi7t-removebg-preview_zw8k5i.png"
+                          alt={token.name}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : token.id === 2 ? (
+                        <img
+                          src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761406429/Gemini_Generated_Image_roqu2wroqu2wroqu-removebg-preview_ktxto3.png"
+                          alt={token.name}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : token.id === 4 ? (
+                        <img
+                          src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761404454/Gemini_Generated_Image_2kua9p2kua9p2kua-removebg-preview_f8eitp.png"
+                          alt={token.name}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : token.id === 5 ? (
+                        <img
+                          src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761406429/Gemini_Generated_Image_y2hd6oy2hd6oy2hd-removebg-preview_gyzykd.png"
+                          alt={token.name}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : token.id === 6 ? (
+                        <img
+                          src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761404454/Gemini_Generated_Image_6lxequ6lxequ6lxe-removebg-preview_cfolj1.png"
+                          alt={token.name}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : token.id === 8 ? (
+                        <img
+                          src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761406122/Gemini_Generated_Image_na7idena7idena7i-removebg-preview_otf18b.png"
+                          alt={token.name}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : token.id === 10 ? (
+                        <img
+                          src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761336936/Gemini_Generated_Image_rl483hrl483hrl48-removebg-preview_dcxsis.png"
+                          alt={token.name}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : token.id === 11 ? (
+                        <img
+                          src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761438767/Gemini_Generated_Image_2rjwp62rjwp62rjw-removebg-preview_vn2rvb.png"
+                          alt={token.name}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : token.id === 12 ? (
+                        <img
+                          src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761438768/Gemini_Generated_Image_8pr2v28pr2v28pr2-removebg-preview_fwnwmr.png"
+                          alt={token.name}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : token.id === 13 ? (
+                        <img
+                          src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761438767/Gemini_Generated_Image_mv1zvwmv1zvwmv1z-removebg-preview_bvnmnn.png"
+                          alt={token.name}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : token.id === 14 ? (
+                        <img
+                          src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761438766/Gemini_Generated_Image_oxxno3oxxno3oxxn-removebg-preview_szxo4h.png"
+                          alt={token.name}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : token.id === 15 ? (
+                        <img
+                          src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761439644/Gemini_Generated_Image_ev07iwev07iwev07-removebg-preview_qxn0gu.png"
+                          alt={token.name}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : token.id === 16 ? (
+                        <img
+                          src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761438767/Gemini_Generated_Image_4d87as4d87as4d87-removebg-preview_ulkxnv.png"
+                          alt={token.name}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <span className="text-6xl opacity-50">⚡</span>
+                      )}
+                    </div>
+                    <h3 className="text-lg font-semibold text-primary mb-2">
+                      {token.name}
+                    </h3>
+                    <div className="space-y-2 mb-4">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-foreground/70">Type:</span>
+                        <span className="text-secondary font-medium">
+                          {token.type}
+                        </span>
+                      </div>
+                      {"duration" in token && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-foreground/70">Duration:</span>
+                          <span className="text-accent font-medium">
+                            {token.duration}
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex justify-between text-sm">
+                        <span className="text-foreground/70">Expires in:</span>
+                        <span className="text-accent font-medium">
+                          {token.expiry}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-foreground/70">Price:</span>
+                        <span className="text-accent font-bold">
+                          {token.price}
+                        </span>
+                      </div>
+                    </div>
+                    {isPurchased ? (
+                      <div className="w-full bg-primary/30 text-primary py-2 px-3 rounded text-sm font-medium text-center">
+                        Purchased
+                      </div>
+                    ) : account ? (
+                      <button
+                        onClick={() => handlePurchase(token.id, priceValue)}
+                        className="w-full bg-accent hover:bg-accent/80 text-foreground py-2 px-3 rounded text-sm font-medium transition-colors"
+                      >
+                        Purchase
+                      </button>
+                    ) : null}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          <button
+            onClick={() => scrollStore("right")}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-accent hover:bg-accent/80 text-foreground w-12 h-12 rounded-full flex items-center justify-center transition-colors shadow-lg"
+            style={{
+              opacity:
+                storeScrollPosition >=
+                xpTokens.length * 304 -
+                  (typeof window !== "undefined" ? window.innerWidth - 112 : 0)
+                  ? 0.3
+                  : 1,
+            }}
+          >
+            →
+          </button>
         </div>
       )}
 
       {activeTab === "collection" && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 max-w-[1800px] mx-auto">
+        <div className="relative max-w-[1800px] mx-auto">
           {ownedItems.length === 0 ? (
-            <div className="col-span-full text-center py-12">
+            <div className="text-center py-12">
               <p className="text-foreground/70 text-lg">
                 No items in your collection
               </p>
             </div>
           ) : (
-            ownedItems.map((itemId) => {
-              const token = xpTokens[(itemId - 1) % xpTokens.length];
-              return (
+            <>
+              <button
+                onClick={() => scrollCollection("left")}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-accent hover:bg-accent/80 text-foreground w-12 h-12 rounded-full flex items-center justify-center transition-colors shadow-lg"
+                style={{ opacity: collectionScrollPosition > 0 ? 1 : 0.3 }}
+              >
+                ←
+              </button>
+              <div
+                className="overflow-x-hidden overflow-y-visible px-14 py-4"
+                onWheel={handleCollectionWheel}
+              >
                 <div
-                  key={itemId}
-                  className="bg-card border-2 border-primary/30 rounded-lg p-6 hover:border-accent hover:shadow-[0_0_20px_rgba(236,72,153,0.5)] hover:scale-105 transition-all duration-300"
+                  className="flex gap-6 transition-transform duration-300"
+                  style={{
+                    transform: `translateX(-${collectionScrollPosition}px)`,
+                  }}
                 >
-                  <div className="aspect-square bg-gradient-to-br from-primary/20 to-secondary/20 rounded mb-4 flex items-center justify-center">
-                    {token.id === 1 ? (
-                      <img
-                        src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761404454/Gemini_Generated_Image_xi7tnwxi7tnwxi7t-removebg-preview_zw8k5i.png"
-                        alt={token.name}
-                        className="w-full h-full object-contain"
-                      />
-                    ) : token.id === 2 ? (
-                      <img
-                        src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761406429/Gemini_Generated_Image_roqu2wroqu2wroqu-removebg-preview_ktxto3.png"
-                        alt={token.name}
-                        className="w-full h-full object-contain"
-                      />
-                    ) : token.id === 4 ? (
-                      <img
-                        src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761404454/Gemini_Generated_Image_2kua9p2kua9p2kua-removebg-preview_f8eitp.png"
-                        alt={token.name}
-                        className="w-full h-full object-contain"
-                      />
-                    ) : token.id === 5 ? (
-                      <img
-                        src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761406429/Gemini_Generated_Image_y2hd6oy2hd6oy2hd-removebg-preview_gyzykd.png"
-                        alt={token.name}
-                        className="w-full h-full object-contain"
-                      />
-                    ) : token.id === 6 ? (
-                      <img
-                        src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761404454/Gemini_Generated_Image_6lxequ6lxequ6lxe-removebg-preview_cfolj1.png"
-                        alt={token.name}
-                        className="w-full h-full object-contain"
-                      />
-                    ) : token.id === 8 ? (
-                      <img
-                        src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761406122/Gemini_Generated_Image_na7idena7idena7i-removebg-preview_otf18b.png"
-                        alt={token.name}
-                        className="w-full h-full object-contain"
-                      />
-                    ) : token.id === 10 ? (
-                      <img
-                        src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761336936/Gemini_Generated_Image_rl483hrl483hrl48-removebg-preview_dcxsis.png"
-                        alt={token.name}
-                        className="w-full h-full object-contain"
-                      />
-                    ) : token.id === 11 ? (
-                      <img
-                        src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761438767/Gemini_Generated_Image_2rjwp62rjwp62rjw-removebg-preview_vn2rvb.png"
-                        alt={token.name}
-                        className="w-full h-full object-contain"
-                      />
-                    ) : token.id === 12 ? (
-                      <img
-                        src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761438768/Gemini_Generated_Image_8pr2v28pr2v28pr2-removebg-preview_fwnwmr.png"
-                        alt={token.name}
-                        className="w-full h-full object-contain"
-                      />
-                    ) : token.id === 13 ? (
-                      <img
-                        src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761438767/Gemini_Generated_Image_mv1zvwmv1zvwmv1z-removebg-preview_bvnmnn.png"
-                        alt={token.name}
-                        className="w-full h-full object-contain"
-                      />
-                    ) : token.id === 14 ? (
-                      <img
-                        src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761438766/Gemini_Generated_Image_oxxno3oxxno3oxxn-removebg-preview_szxo4h.png"
-                        alt={token.name}
-                        className="w-full h-full object-contain"
-                      />
-                    ) : token.id === 15 ? (
-                      <img
-                        src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761439644/Gemini_Generated_Image_ev07iwev07iwev07-removebg-preview_qxn0gu.png"
-                        alt={token.name}
-                        className="w-full h-full object-contain"
-                      />
-                    ) : token.id === 16 ? (
-                      <img
-                        src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761438767/Gemini_Generated_Image_4d87as4d87as4d87-removebg-preview_ulkxnv.png"
-                        alt={token.name}
-                        className="w-full h-full object-contain"
-                      />
-                    ) : (
-                      <span className="text-6xl opacity-50">⚡</span>
-                    )}
-                  </div>
-                  <h3 className="text-lg font-semibold text-primary mb-2">
-                    {token.name}
-                  </h3>
-                  <div className="space-y-2 mb-4">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-foreground/70">Item ID:</span>
-                      <span className="text-accent font-bold">#{itemId}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-foreground/70">Type:</span>
-                      <span className="text-secondary font-medium">
-                        {token.type}
-                      </span>
-                    </div>
-                    {"duration" in token && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-foreground/70">Duration:</span>
-                        <span className="text-accent font-medium">
-                          {token.duration}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <input
-                      type="text"
-                      value={transferAddresses[itemId] || ""}
-                      onChange={(e) =>
-                        setTransferAddresses({
-                          ...transferAddresses,
-                          [itemId]: e.target.value,
-                        })
-                      }
-                      placeholder="Recipient address"
-                      className="w-full bg-background border-2 border-primary/30 text-foreground px-3 py-2 rounded text-sm focus:border-accent outline-none"
-                    />
-                    {transferAddresses[itemId] && (
-                      <button
-                        onClick={() =>
-                          handleTransferItem(itemId, transferAddresses[itemId])
-                        }
-                        className="w-full bg-accent hover:bg-accent/80 text-foreground py-2 px-3 rounded text-sm font-medium transition-colors"
+                  {ownedItems.map((itemId) => {
+                    const token = xpTokens[(itemId - 1) % xpTokens.length];
+                    return (
+                      <div
+                        key={itemId}
+                        className="bg-card border-2 border-primary/30 rounded-lg p-6 hover:border-accent hover:shadow-[0_0_20px_rgba(236,72,153,0.5)] hover:scale-105 transition-all duration-300 flex-shrink-0"
+                        style={{ width: "280px" }}
                       >
-                        Transfer
-                      </button>
-                    )}
-                  </div>
+                        <div className="aspect-square bg-gradient-to-br from-primary/20 to-secondary/20 rounded mb-4 flex items-center justify-center">
+                          {token.id === 1 ? (
+                            <img
+                              src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761404454/Gemini_Generated_Image_xi7tnwxi7tnwxi7t-removebg-preview_zw8k5i.png"
+                              alt={token.name}
+                              className="w-full h-full object-contain"
+                            />
+                          ) : token.id === 2 ? (
+                            <img
+                              src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761406429/Gemini_Generated_Image_roqu2wroqu2wroqu-removebg-preview_ktxto3.png"
+                              alt={token.name}
+                              className="w-full h-full object-contain"
+                            />
+                          ) : token.id === 4 ? (
+                            <img
+                              src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761404454/Gemini_Generated_Image_2kua9p2kua9p2kua-removebg-preview_f8eitp.png"
+                              alt={token.name}
+                              className="w-full h-full object-contain"
+                            />
+                          ) : token.id === 5 ? (
+                            <img
+                              src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761406429/Gemini_Generated_Image_y2hd6oy2hd6oy2hd-removebg-preview_gyzykd.png"
+                              alt={token.name}
+                              className="w-full h-full object-contain"
+                            />
+                          ) : token.id === 6 ? (
+                            <img
+                              src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761404454/Gemini_Generated_Image_6lxequ6lxequ6lxe-removebg-preview_cfolj1.png"
+                              alt={token.name}
+                              className="w-full h-full object-contain"
+                            />
+                          ) : token.id === 8 ? (
+                            <img
+                              src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761406122/Gemini_Generated_Image_na7idena7idena7i-removebg-preview_otf18b.png"
+                              alt={token.name}
+                              className="w-full h-full object-contain"
+                            />
+                          ) : token.id === 10 ? (
+                            <img
+                              src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761336936/Gemini_Generated_Image_rl483hrl483hrl48-removebg-preview_dcxsis.png"
+                              alt={token.name}
+                              className="w-full h-full object-contain"
+                            />
+                          ) : token.id === 11 ? (
+                            <img
+                              src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761438767/Gemini_Generated_Image_2rjwp62rjwp62rjw-removebg-preview_vn2rvb.png"
+                              alt={token.name}
+                              className="w-full h-full object-contain"
+                            />
+                          ) : token.id === 12 ? (
+                            <img
+                              src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761438768/Gemini_Generated_Image_8pr2v28pr2v28pr2-removebg-preview_fwnwmr.png"
+                              alt={token.name}
+                              className="w-full h-full object-contain"
+                            />
+                          ) : token.id === 13 ? (
+                            <img
+                              src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761438767/Gemini_Generated_Image_mv1zvwmv1zvwmv1z-removebg-preview_bvnmnn.png"
+                              alt={token.name}
+                              className="w-full h-full object-contain"
+                            />
+                          ) : token.id === 14 ? (
+                            <img
+                              src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761438766/Gemini_Generated_Image_oxxno3oxxno3oxxn-removebg-preview_szxo4h.png"
+                              alt={token.name}
+                              className="w-full h-full object-contain"
+                            />
+                          ) : token.id === 15 ? (
+                            <img
+                              src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761439644/Gemini_Generated_Image_ev07iwev07iwev07-removebg-preview_qxn0gu.png"
+                              alt={token.name}
+                              className="w-full h-full object-contain"
+                            />
+                          ) : token.id === 16 ? (
+                            <img
+                              src="https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761438767/Gemini_Generated_Image_4d87as4d87as4d87-removebg-preview_ulkxnv.png"
+                              alt={token.name}
+                              className="w-full h-full object-contain"
+                            />
+                          ) : (
+                            <span className="text-6xl opacity-50">⚡</span>
+                          )}
+                        </div>
+                        <h3 className="text-lg font-semibold text-primary mb-2">
+                          {token.name}
+                        </h3>
+                        <div className="space-y-2 mb-4">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-foreground/70">Item ID:</span>
+                            <span className="text-accent font-bold">
+                              #{itemId}
+                            </span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-foreground/70">Type:</span>
+                            <span className="text-secondary font-medium">
+                              {token.type}
+                            </span>
+                          </div>
+                          {"duration" in token && (
+                            <div className="flex justify-between text-sm">
+                              <span className="text-foreground/70">
+                                Duration:
+                              </span>
+                              <span className="text-accent font-medium">
+                                {token.duration}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="space-y-2">
+                          <input
+                            type="text"
+                            value={transferAddresses[itemId] || ""}
+                            onChange={(e) =>
+                              setTransferAddresses({
+                                ...transferAddresses,
+                                [itemId]: e.target.value,
+                              })
+                            }
+                            placeholder="Recipient address"
+                            className="w-full bg-background border-2 border-primary/30 text-foreground px-3 py-2 rounded text-sm focus:border-accent outline-none"
+                          />
+                          {transferAddresses[itemId] && (
+                            <button
+                              onClick={() =>
+                                handleTransferItem(
+                                  itemId,
+                                  transferAddresses[itemId]
+                                )
+                              }
+                              className="w-full bg-accent hover:bg-accent/80 text-foreground py-2 px-3 rounded text-sm font-medium transition-colors"
+                            >
+                              Transfer
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })
+              </div>
+              <button
+                onClick={() => scrollCollection("right")}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-accent hover:bg-accent/80 text-foreground w-12 h-12 rounded-full flex items-center justify-center transition-colors shadow-lg"
+                style={{
+                  opacity:
+                    collectionScrollPosition >=
+                    ownedItems.length * 304 -
+                      (typeof window !== "undefined"
+                        ? window.innerWidth - 112
+                        : 0)
+                      ? 0.3
+                      : 1,
+                }}
+              >
+                →
+              </button>
+            </>
           )}
         </div>
       )}
