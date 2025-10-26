@@ -836,7 +836,14 @@ export default function Home() {
 
       <ToastContainer position="bottom-right" theme="dark" />
 
-      <h1 className="text-5xl font-bold text-center mb-8 bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+      <h1
+        className="text-5xl font-bold text-center mb-8 bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent"
+        style={{
+          textShadow:
+            "0 0 20px rgba(168, 85, 247, 0.8), 0 0 40px rgba(236, 72, 153, 0.6), 0 0 60px rgba(59, 130, 246, 0.4)",
+          filter: "drop-shadow(0 0 10px rgba(236, 72, 153, 0.7))",
+        }}
+      >
         Botnite Store
       </h1>
 
