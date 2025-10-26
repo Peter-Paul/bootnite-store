@@ -840,8 +840,8 @@ export default function Home() {
         className="text-5xl font-bold text-center mb-8 bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent"
         style={{
           textShadow:
-            "0 0 20px rgba(168, 85, 247, 0.8), 0 0 40px rgba(236, 72, 153, 0.6), 0 0 60px rgba(59, 130, 246, 0.4)",
-          filter: "drop-shadow(0 0 10px rgba(236, 72, 153, 0.7))",
+            "0 0 20px rgba(218, 165, 91, 0.9), 0 0 40px rgba(197, 137, 68, 0.7), 0 0 60px rgba(218, 165, 91, 0.5)",
+          filter: "drop-shadow(0 0 15px rgba(218, 165, 91, 0.8))",
         }}
       >
         Botnite Store
@@ -881,7 +881,7 @@ export default function Home() {
                       className="max-w-full max-h-80 object-contain rounded-lg"
                       style={{
                         boxShadow:
-                          "0 0 30px rgba(236, 72, 153, 0.6), 0 0 60px rgba(236, 72, 153, 0.4), 0 0 90px rgba(236, 72, 153, 0.2)",
+                          "0 0 20px rgba(218, 165, 91, 0.3), 0 0 40px rgba(197, 137, 68, 0.2), 0 0 60px rgba(218, 165, 91, 0.1)",
                       }}
                     />
                   ) : (
