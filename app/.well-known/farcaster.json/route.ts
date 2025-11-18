@@ -12,10 +12,11 @@ export async function GET() {
   const URL = process.env.NEXT_PUBLIC_URL as string;
   return Response.json({
     accountAssociation: {
-      // these will be added in step 5
-      header: "",
-      payload: "",
-      signature: "",
+      header:
+        "eyJmaWQiOjE0ODQ1NjIsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhkNWU5NUFkMDQ5NkUwOTBBZjlENzJmYkZDMjVFQmFERkI5YzdEYzZBIn0",
+      payload: "eyJkb21haW4iOiJib290bml0ZS1zdG9yZS52ZXJjZWwuYXBwIn0",
+      signature:
+        "hg3WbHJOi4z3HVTUeAYAl215DyV1jrjTH232dYp8HXdesuqmB02RamKCYs7Eqfzs75jYnrparfwovWzH7LRKDBs=",
     },
     baseBuilder: {
       ownerAddress: "0x", // add your Base Account address here
