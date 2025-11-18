@@ -18,9 +18,6 @@ export async function GET() {
       signature:
         "hg3WbHJOi4z3HVTUeAYAl215DyV1jrjTH232dYp8HXdesuqmB02RamKCYs7Eqfzs75jYnrparfwovWzH7LRKDBs=",
     },
-    baseBuilder: {
-      ownerAddress: "0x", // add your Base Account address here
-    },
     miniapp: {
       version: "1",
       name: "Botnite Store",
@@ -46,6 +43,9 @@ export async function GET() {
       ogDescription: "Challenge friends in real time.",
       ogImageUrl: "https://ex.co/og.png",
       noindex: true,
+    },
+    baseBuilder: {
+      ownerAddress: "0xd3a2c511d7B4C192dFDF5B78041f142Af715fcBd",
     },
   }); // see the next step for the manifest_json_object
 }
