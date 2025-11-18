@@ -9,13 +9,10 @@ const lilitaOne = Lilita_One({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Botnite Store",
-  description: "Your one-stop shop for all things botnite",
-};
-
 export async function generateMetadata(): Promise<Metadata> {
   return {
+    title: "Botnite Store",
+    description: "Your one-stop shop for all things botnite",
     other: {
       "fc:miniapp": JSON.stringify({
         version: "next",

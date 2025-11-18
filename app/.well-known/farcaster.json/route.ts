@@ -23,14 +23,16 @@ export async function GET() {
     },
     miniapp: {
       version: "1",
-      name: "Example Mini App",
-      homeUrl: "https://ex.co",
-      iconUrl: "https://ex.co/i.png",
+      name: "Botnite Store",
+      homeUrl:
+        "https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761406429/Gemini_Generated_Image_roqu2wroqu2wroqu-removebg-preview_ktxto3.png",
+      iconUrl:
+        "https://res.cloudinary.com/dwf6iuvbh/image/upload/v1761406429/Gemini_Generated_Image_roqu2wroqu2wroqu-removebg-preview_ktxto3.png",
       splashImageUrl: "https://ex.co/l.png",
       splashBackgroundColor: "#000000",
       webhookUrl: "https://ex.co/api/webhook",
-      subtitle: "Fast, fun, social",
-      description: "A fast, fun way to challenge friends in real time.",
+      subtitle: "Ultimate Botnite Gear",
+      description: "Discover the ultimate Botnite gear and accessories.",
       screenshotUrls: [
         "https://ex.co/s1.png",
         "https://ex.co/s2.png",
