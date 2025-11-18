@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { ToastContainer, toast } from "react-toastify";
+import sdk from "@farcaster/miniapp-sdk";
 
 declare global {
   interface Window {
@@ -444,6 +445,10 @@ export default function Home() {
       };
     }
   }, [account]);
+
+  useEffect(() => {
+    sdk.actions.ready();
+  }, []);
 
   useEffect(() => {
     const currentItem = featuredItems[currentSlide];
